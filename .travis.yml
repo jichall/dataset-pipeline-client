@@ -5,4 +5,4 @@ go:
   - master
 
 script:
-  - cd src && make test
+  - make test
