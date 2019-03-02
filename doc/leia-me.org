@@ -1,0 +1,85 @@
+#+LANGUAGE: pt-br
+
+#+LATEX_CLASS_OPTIONS: [a4paper, 12pt]
+
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \usepackage{lipsum}
+#+LATEX_HEADER: \usepackage{indentfirst}
+#+LATEX_HEADER: \usepackage[portuguese]{babel}
+#+LATEX_HEADER: \usepackage{libertine}
+#+LATEX_HEADER: \usepackage{tkz-graph}
+#+LATEX_HEADER: \usepackage[usenames,dvipsnames]{xcolor}
+#+LATEX_HEADER: \usepackage[left=3cm,bottom=3cm,top=2cm,right=2cm]{geometry}
+
+#+LATEX_HEADER: \newcommand{\code}{\texttt}
+
+# Pagination and other stuff
+
+#+LATEX_HEADER: \pagestyle{empty}
+#+LATEX_HEADER: \fancyfoot[R]{\thepage}
+
+#+TITLE:  Dataset Pipeline Client
+#+AUTHOR: Rafael Campos Nunes
+#+DATE: <2019-02-29 sex>
+
+# Introdução
+
+A elaboração de uma API que disponibiliza um serviço de upload de arquivos sobre
+o protocolo HTTP se completa com a criação de um cliente onde as seguintes
+funções foram determinadas:
+
+- Leitura de um diretório de arquivos contendo arquivos JSON
+- Envio dos dados ao serviço onde serão persistidos de alguma maneira
+- Consulta dos dados através do atributo PK ao serviço disponibilizado
+
+Ao realizar  as tarefas denotadas anteriormente a linguagem Go foi escolhida
+para o desenvolvimento  visto que sua biblioteca padrão fornece vários recursos
+que permitem a escrita da aplicação de maneira simples e fácil além de ser uma
+linguagem de compilação rápida, contrastando essas características com
+linguagens como C e C++. A serialização de extração de dados dos arquivos no
+formato mencionado anteriormente é realizada utilizando o pacote $encoding/json$,
+ o envio destes dados pode ser feita utilizando o pacote $net/http$ e a leitura
+de diretórios/arquivos é realizada utilizando os pacotes $os$, $io$ e
+$io/ioutil$.
+
+# Leitura do diretório
+
+Ao ler o diretório bastou usar a função contida no pacote $io/ioutil$ denominada
+$LoadDir$ onde é passada uma cadeia de caracteres representando o caminho do
+diretório no fs relativo ao ambiente de execução do programa. A partir
+disso é retornado um vetor de `os.FileInfo` onde é possível verificar algumas
+características do arquivo como se é um diretório e o nome deste.
+
+Ao filtrar os arquivos a serem lidos por extensão e também pela característica
+de arquivo é denotada uma estrutura que armazena as informações do arquivo lido
+
+# Leitura dos arquivos
+
+Os arquivos são simplesmente arquivos de texto (a extensão não foi determinada)
+que armazenam, a cada linha deste, um JSON (Javascript Object Notation) de tal
+forma que a estrutura desse arquivo é tal como abaixo:
+
+#+BEGIN_SRC javascript
+{ "pk": "1", "score": "321" }
+{ "pk": "2", "score": "435" }
+...
+{ "pk": "101", "score": "13" }
+#+END_SRC
+
+Observa-se que o objeto contém dois atributos, o atributo $pk$ e o $score$. É
+fácil, portanto, definir uma estrutura em _Go_ (linguagem utilizada para
+desenvolver a aplicação) para serialização, e vice versa com serialização
+reversa também conhecida neste contexto como _unmarshalling_[fn:1], de dados.
+
+A extração da informação contida nos arquivos é feita utiliza ndo
+
+# Envio de dados
+
+O envio dos dados é realizado utilizando a API REST e o console. Ao utilizar a
+função /send/ é executado o carregamento de arquivos dentro do diretório
+definido previamente na váriavel /dir/ e, após isso, envia-se requisições GET
+ao ponto da API com as informações necessárias.
+
+* Footnotes
+
+[fn:1] Serialization in Computer Science available on: https://en.wikipedia.org/wiki/Serialization

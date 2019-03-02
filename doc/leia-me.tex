@@ -1,0 +1,95 @@
+% Created 2019-03-01 sex 23:38
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{indentfirst}
+\usepackage[portuguese, ]{babel}
+\usepackage{libertine}
+\usepackage{tkz-graph}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[left=3cm,bottom=3cm,top=2cm,right=2cm]{geometry}
+\newcommand{\code}{\texttt}
+\pagestyle{empty}
+\fancyfoot[R]{\thepage}
+\author{Rafael Campos Nunes}
+\date{\textit{<2019-03-01 sex>}}
+\title{Dataset Pipeline Client}
+\hypersetup{
+ pdfauthor={Rafael Campos Nunes},
+ pdftitle={Dataset Pipeline Client},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.1.9)},
+ pdflang={Pt-Br}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+A elaboração de uma API que disponibiliza um serviço de upload de arquivos sobre
+o protocolo HTTP se completa com a criação de um cliente onde as seguintes
+funções foram determinadas:
+
+\begin{itemize}
+\item Leitura de um diretório de arquivos contendo arquivos JSON
+\item Envio dos dados ao serviço onde serão persistidos de alguma maneira
+\item Consulta dos dados através do atributo PK ao serviço disponibilizado
+\end{itemize}
+
+Ao realizar  as tarefas denotadas anteriormente a linguagem Go foi escolhida
+para o desenvolvimento  visto que sua biblioteca padrão fornece vários recursos
+que permitem a escrita da aplicação de maneira simples e fácil além de ser uma
+linguagem de compilação rápida, contrastando essas características com
+linguagens como C e C++. A serialização de extração de dados dos arquivos no
+formato mencionado anteriormente é realizada utilizando o pacote \(encoding/json\),
+ o envio destes dados pode ser feita utilizando o pacote \(net/http\) e a leitura
+de diretórios/arquivos é realizada utilizando os pacotes \(os\), \(io\) e
+\(io/ioutil\).
+
+Ao ler o diretório bastou usar a função contida no pacote \(io/ioutil\) denominada
+\(LoadDir\) onde é passada uma cadeia de caracteres representando o caminho do
+diretório no fs relativo ao ambiente de execução do programa. A partir
+disso é retornado um vetor de `os.FileInfo` onde é possível verificar algumas
+características do arquivo como se é um diretório e o nome deste.
+
+Ao filtrar os arquivos a serem lidos por extensão e também pela característica
+de arquivo é denotada uma estrutura que armazena as informações do arquivo lido
+
+Os arquivos são simplesmente arquivos de texto (a extensão não foi determinada)
+que armazenam, a cada linha deste, um JSON (Javascript Object Notation) de tal
+forma que a estrutura desse arquivo é tal como abaixo:
+
+\begin{minted}[frame=lines,linenos=true]{javascript}
+{ "pk": "1", "score": "321" }
+{ "pk": "2", "score": "435" }
+...
+{ "pk": "101", "score": "13" }
+\end{minted}
+
+Observa-se que o objeto contém dois atributos, o atributo \(pk\) e o \(score\). É
+fácil, portanto, definir uma estrutura em \uline{Go} (linguagem utilizada para
+desenvolver a aplicação) para serialização, e vice versa com serialização
+reversa também conhecida neste contexto como \uline{unmarshalling}\footnote{Serialization in Computer Science available on: \url{https://en.wikipedia.org/wiki/Serialization}}, de dados.
+
+A extração da informação contida nos arquivos é feita utiliza ndo
+
+O envio dos dados é realizado utilizando a API REST e o console. Ao utilizar a
+função \emph{send} é executado o carregamento de arquivos dentro do diretório
+definido previamente na váriavel \emph{dir} e, após isso, envia-se requisições GET
+ao ponto da API com as informações necessárias.
+\end{document}
