@@ -15,6 +15,7 @@ func Init() {
 	exit := false
 
 	fmt.Println("DPS CLI")
+	fmt.Println("=======")
 	fmt.Println("Type help for more information")
 
 	reader := bufio.NewReader(os.Stdin)
@@ -33,7 +34,8 @@ func Init() {
 			fmt.Println("url <url>\t\tSets the url to send the loaded files to")
 			fmt.Println("send\t\t\tLoad and send the files to the server")
 			fmt.Printf("get <pk>\t\tGets the data associated with the pk " +
-				"attribute\n\n")
+				"attribute\n")
+			fmt.Printf("exit\t\t\tExits the terminal\n")
 
 		} else if strings.HasPrefix(command, "url") {
 			c, err := checkCommand(command)
@@ -70,8 +72,8 @@ func Init() {
 			} else {
 				fmt.Printf("%s", get(c[1]))
 			}
-		} else if command == "" {
-
+		} else if command == "exit" {
+			os.Exit(0)
 		} else {
 			fmt.Printf("[!] Invalid command %s. Type help to see the available "+
 				"commands\n", command)
@@ -96,7 +98,12 @@ func get(pk string) []byte {
 	res, err := http.Get("http://" + url + "/v1/get/" + pk)
 
 	if err != nil {
-		fmt.Printf("Error trying to get. Cause %s", err.Error())
+		fmt.Printf("[!] Error trying to get. Cause %s\n", err.Error())
+		defer func() {
+			if recover() != nil {
+				fmt.Printf("[!] Check the server status.\n")
+			}
+		}()
 	}
 
 	defer res.Body.Close()
@@ -143,6 +150,11 @@ func send(filename string, rows [][]JSONData) {
 
 			if err != nil {
 				fmt.Printf("[!] Send data failed. Cause %s\n", err.Error())
+				defer func() {
+					if recover() != nil {
+						fmt.Printf("[!] Check the server status.\n")
+					}
+				}()
 			}
 		}
 	}
