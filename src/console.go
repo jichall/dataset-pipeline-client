@@ -32,7 +32,8 @@ func Init() {
 			fmt.Println("dir <dir>\t\tSets the directory to read the files ")
 			fmt.Println("url <url>\t\tSets the url to send the loaded files to")
 			fmt.Println("send\t\t\tLoad and send the files to the server")
-			fmt.Printf("get <pk>\t\tGets the data associated with the pk attribute\n\n")
+			fmt.Printf("get <pk>\t\tGets the data associated with the pk " +
+				"attribute\n\n")
 
 		} else if strings.HasPrefix(command, "url") {
 			c, err := checkCommand(command)
@@ -92,7 +93,7 @@ func checkCommand(command string) ([]string, error) {
 }
 
 func get(pk string) []byte {
-	res, err := http.Get("http://" + url + "/v1/get?pk=" + pk)
+	res, err := http.Get("http://" + url + "/v1/get/" + pk)
 
 	if err != nil {
 		fmt.Printf("Error trying to get. Cause %s", err.Error())
@@ -136,8 +137,9 @@ func load() ([]string, [][]JSONData) {
 func send(filename string, rows [][]JSONData) {
 	for i := range rows {
 		for j := range rows[i] {
-			_, err := http.Get("http://" + url + "/v1/get?filename=" + filename +
-				"&pk=" + rows[i][j].Pk + "&score=" + rows[i][j].Score)
+			_, err := http.Get("http://" + url + "/v1/new/?filename=" +
+				filename + "&pk=" + rows[i][j].Pk + "&score=" +
+				rows[i][j].Score)
 
 			if err != nil {
 				fmt.Printf("[!] Send data failed. Cause %s\n", err.Error())
