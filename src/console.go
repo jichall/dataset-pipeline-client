@@ -63,12 +63,13 @@ func Init() {
 				send(filenames[i], rows)
 			}
 		} else if strings.HasPrefix(command, "get") {
-			fmt.Println(strings.Split(command, " "))
-
 			c, err := checkCommand(command)
 
 			if err != nil {
-				fmt.Println("[!] Missing pk value on the get command")
+				// has only the get instruction and will return every piece of
+				// data. If there's tons of data it should have a more
+				// controllable way of displaying it.
+				fmt.Printf("%s", get(""))
 			} else {
 				fmt.Printf("%s", get(c[1]))
 			}
@@ -95,7 +96,14 @@ func checkCommand(command string) ([]string, error) {
 }
 
 func get(pk string) []byte {
-	res, err := http.Get("http://" + url + "/v1/get/" + pk)
+	var res *http.Response
+	var err error
+
+	if pk == "" {
+		res, err = http.Get("http://" + url + "/v1/get/")
+	} else {
+		res, err = http.Get("http://" + url + "/v1/get/" + pk)
+	}
 
 	if err != nil {
 		fmt.Printf("[!] Error trying to get. Cause %s\n", err.Error())
